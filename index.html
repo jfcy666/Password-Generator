@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen+Mono&family=Rubik:ital,wght@0,300;0,400;0,500;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/css.css">
+    <title>Password Generator</title>
+</head>
+<body>
+    <main>  <!--Main Content-->
+        <div>   
+            <h1 class="heading">PASSWORD GENERATOR_</h1> <!--Title-->
+            <h2 class="subheading"> If all options are disabled, the password uses numbers and letters of both registers.
+                <br>Click on the password to copy it to the clipboard. <!--Subtitle-->
+            </h2>
+            <div class="header-content"> <!--Links-->
+                <a href="https://github.com/jfcy666" target="_blank">GitHub</a> 
+                <a href="#" id="contact-link-bot">Telegram bot <span>Soon</span></a>
+                <a href="#"><span class="emoji">&#x1F1F7;&#x1F1FA;</span>Russian</a>
+            </div>
+        </div>
+        <div class="white-box"> <!--Password Generator-->
+            <div class="first-option">
+                <div class="grid-1">
+                    <h1 class="first-option-text">Number of characters, 46 max*</h1> <!--First Option-->
+                    <input type="number" min="6" max="46" class="input" value="6">
+                </div>
+                <div class="grid-2"> 
+                    <h1 class="first-option-text">Any special symbols?</h1> <!--Second Option-->
+                    <input type="checkbox" id="switch"/><label for="switch">Toggle</label> <!--Toggle-->
+                </div>
+                <div class="grid-3">
+                    <div>
+                        <h1 class="first-option-text">UPPERCASE</h1> <!--Third Option-->
+                        <input type="checkbox" id="switch-1"/><label for="switch-1">Toggle</label> 
+                    </div>
+                </div>
+                <div class="grid-padding">
+                    <h1 class="first-option-text">LOWERCASE</h1> <!--Fourth Option-->
+                    <input type="checkbox" id="switch-2"/><label for="switch-2">Toggle</label> 
+                </div>
+            </div>
+            <button class="gener-btn">Generate</button> <!--Generate Button-->
+            <div class="password-line"> <!--Four Passwords-->
+                <p id="password-1"></p>
+                <p id="password-2"></p>
+                <p id="password-3"></p>
+                <p id="password-4"></p>
+                <p id="password-copied"></p> <!--Copied Label-->
+            </div>
+        </div>
+        <script>
+            /*Password Generation Function*/
+            var useSpecialChars = false;
+            var useUpperCase = true;
+            var useLowerCase = true;
+            var switchElementSpecialChars = document.getElementById('switch');
+            var switchElementUpperCase = document.getElementById('switch-1');
+            var switchElementLowerCase = document.getElementById('switch-2');
+
+            switchElementSpecialChars.checked = useSpecialChars;
+            switchElementUpperCase.checked = useUpperCase;
+            switchElementLowerCase.checked = useLowerCase;
+
+            switchElementSpecialChars.addEventListener('change', function() {
+                useSpecialChars = this.checked;
+            });
+
+            switchElementUpperCase.addEventListener('change', function() {
+                useUpperCase = this.checked;
+            });
+
+            switchElementLowerCase.addEventListener('change', function() {
+                useLowerCase = this.checked;
+            });
+
+            document.querySelector('.gener-btn').addEventListener('click', function() {
+                var length = parseInt(document.querySelector('.input').value);
+    
+            for (let i = 1; i <= 4; i++) {
+                var password = generatePassword(length, useSpecialChars, useUpperCase, useLowerCase);
+                var passwordElement = document.getElementById('password-' + i);
+                passwordElement.textContent = password;
+                passwordElement.removeEventListener('click', copyToClipboard);
+                passwordElement.addEventListener('click', copyToClipboard);
+            }});
+           
+            /*Copied Function*/
+            function copyToClipboard() {
+                var password = this.textContent;
+                navigator.clipboard.writeText(password);
+                var copiedText = document.createElement('span');
+                copiedText.textContent = '   Copied';
+
+                document.querySelectorAll('.copied').forEach(function(element) {
+                    element.remove();
+                });
+
+                this.appendChild(copiedText).classList.add('copied');
+        
+                setTimeout(function() {
+                    copiedText.remove();
+                }, 2000);
+            }
+
+            /*Items Array*/
+            function generatePassword(length, useSpecialChars, useUpperCase, useLowerCase) {
+                var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+                if (useSpecialChars) {
+                    var specialCharSet = "!\\\\#$%&'()*+,-./:;<=>?@[\\\\\\\\]^_`{|}~";
+                    var specialCharCount = Math.min(Math.floor(length * 0.2), specialCharSet.length);
+                    for (var i = 0; i < specialCharCount; i++) {
+                        var randomIndex = Math.floor(Math.random() * specialCharSet.length);
+                        charset += specialCharSet[randomIndex];
+                    }
+                }
+                if (useUpperCase) {
+                    charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                }
+                if (!useLowerCase && useUpperCase) {
+                    charset = charset.toUpperCase();
+                } else if (!useLowerCase && !useUpperCase) {
+                    charset = charset.toUpperCase() + charset.toLowerCase();
+                }
+                var password = "";
+                for (var i = 0; i < length; i++) {
+                    var randomIndex = Math.floor(Math.random() * charset.length);
+                    password += charset[randomIndex];
+                }
+                return password;
+            }
+        </script>
+    </main>
+</body>
+</html>
